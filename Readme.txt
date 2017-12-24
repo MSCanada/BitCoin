@@ -26,80 +26,80 @@ var transaction = {
 
 
 var createTransaction = function(transaction) {
-  return new Promise((resolve, reject) => {
+Â  return new Promise((resolve, reject) => {
 
-   const unit = bitcore.Unit;
+Â Â  const unit = bitcore.Unit;
 const minerFee = unit.fromMilis(0.128).toSatoshis(); //cost of transaction in satoshis (minerfee)
 const transactionAmount = unit.fromMilis(0.05).toSatoshis();
 
-    if (!bitcoinaddress.validate(transaction.fromaddress)) {
-      return reject('Origin address checksum failed');
-    }
-    if (!bitcoinaddress.validate(transaction.toaddress)) {
-      return reject('Recipient address checksum failed');
-    }
+Â Â Â  if (!bitcoinaddress.validate(transaction.fromaddress)) {
+Â Â Â Â Â  return reject('Origin address checksum failed');
+Â Â Â  }
+Â Â Â  if (!bitcoinaddress.validate(transaction.toaddress)) {
+Â Â Â Â Â  return reject('Recipient address checksum failed');
+Â Â Â  }
 
-    insight.getUnspentUtxos(transaction.fromaddress, function(error, utxos) {
-      if (error) {
-        //any other error
-        return reject(error);
-      } else {
+Â Â Â  insight.getUnspentUtxos(transaction.fromaddress, function(error, utxos) {
+Â Â Â Â Â  if (error) {
+Â Â Â Â Â Â Â  //any other error
+Â Â Â Â Â Â Â  return reject(error);
+Â Â Â Â Â  } else {
 
-        if (utxos.length == 0) {
-          //if no transactions have happened, there is no balance on the address.
-          return reject("You don't have enough Satoshis to cover the miner fee.");
-        }
+Â Â Â Â Â Â Â  if (utxos.length == 0) {
+Â Â Â Â Â Â Â Â Â  //if no transactions have happened, there is no balance on the address.
+Â Â Â Â Â Â Â Â Â  return reject("You don't have enough Satoshis to cover the miner fee.");
+Â Â Â Â Â Â Â  }
 
-        //get balance
-        var balance = unit.fromSatoshis(0).toSatoshis();
-        for (var i = 0; i < utxos.length; i++) {
-          balance += unit.fromSatoshis(parseInt(utxos[i]['satoshis'])).toSatoshis();
-        }
+Â Â Â Â Â Â Â  //get balance
+Â Â Â Â Â Â Â  var balance = unit.fromSatoshis(0).toSatoshis();
+Â Â Â Â Â Â Â  for (var i = 0; i < utxos.length; i++) {
+Â Â Â Â Â Â Â Â Â  balance += unit.fromSatoshis(parseInt(utxos[i]['satoshis'])).toSatoshis();
+Â Â Â Â Â Â Â  }
 
-        //check whether the balance of the address covers the miner fee
-        if ((balance - transactionAmount - minerFee) > 0) {
+Â Â Â Â Â Â Â  //check whether the balance of the address covers the miner fee
+Â Â Â Â Â Â Â  if ((balance - transactionAmount - minerFee) > 0) {
 
-          //create a new transaction
-          try {
-            var bitcore_transaction = new bitcore.Transaction()
-              .from(utxos)
-              .to(transaction.toaddress, transactionAmount)
-              .fee(minerFee)
-              .change(transaction.fromaddress)
-              .sign(transaction.privatekey);
+Â Â Â Â Â Â Â Â Â  //create a new transaction
+Â Â Â Â Â Â Â Â Â  try {
+Â Â Â Â Â Â Â Â Â Â Â  var bitcore_transaction = new bitcore.Transaction()
+Â Â Â Â Â Â Â Â Â Â Â Â Â  .from(utxos)
+Â Â Â Â Â Â Â Â Â Â Â Â Â  .to(transaction.toaddress, transactionAmount)
+Â Â Â Â Â Â Â Â Â Â Â Â Â  .fee(minerFee)
+Â Â Â Â Â Â Â Â Â Â Â Â Â  .change(transaction.fromaddress)
+Â Â Â Â Â Â Â Â Â Â Â Â Â  .sign(transaction.privatekey);
 
-            //handle serialization errors
-            if (bitcore_transaction.getSerializationError()) {
-              var error = bitcore_transaction.getSerializationError().message;
-              switch (error) {
-                case 'Some inputs have not been fully signed':
-                  return reject('Please check your private key');
-                  break;
-                default:
-                  return reject(error);
-              }
-            }
+Â Â Â Â Â Â Â Â Â Â Â  //handle serialization errors
+Â Â Â Â Â Â Â Â Â Â Â  if (bitcore_transaction.getSerializationError()) {
+Â Â Â Â Â Â Â Â Â Â Â Â Â  var error = bitcore_transaction.getSerializationError().message;
+Â Â Â Â Â Â Â Â Â Â Â Â Â  switch (error) {
+Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â  case 'Some inputs have not been fully signed':
+Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â  return reject('Please check your private key');
+Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â  break;
+Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â  default:
+Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â  return reject(error);
+Â Â Â Â Â Â Â Â Â Â Â Â Â  }
+Â Â Â Â Â Â Â Â Â Â Â  }
 
-            // broadcast the transaction to the blockchain
-            insight.broadcast(bitcore_transaction, function(error, body) {
-              if (error) {
-                reject('Error in broadcast: ' + error);
-              } else {
-                resolve({
-                  transactionId: body
-                });
-              }
-            });
+Â Â Â Â Â Â Â Â Â Â Â  // broadcast the transaction to the blockchain
+Â Â Â Â Â Â Â Â Â Â Â  insight.broadcast(bitcore_transaction, function(error, body) {
+Â Â Â Â Â Â Â Â Â Â Â Â Â  if (error) {
+Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â  reject('Error in broadcast: ' + error);
+Â Â Â Â Â Â Â Â Â Â Â Â Â  } else {
+Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â  resolve({
+Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â  transactionId: body
+Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â  });
+Â Â Â Â Â Â Â Â Â Â Â Â Â  }
+Â Â Â Â Â Â Â Â Â Â Â  });
 
-          } catch (error) {
-            return reject(error.message);
-          }
-        } else {
-          return reject("You don't have enough Satoshis to cover the miner fee.");
-        }
-      }
-    });
-  });
+Â Â Â Â Â Â Â Â Â  } catch (error) {
+Â Â Â Â Â Â Â Â Â Â Â  return reject(error.message);
+Â Â Â Â Â Â Â Â Â  }
+Â Â Â Â Â Â Â  } else {
+Â Â Â Â Â Â Â Â Â  return reject("You don't have enough Satoshis to cover the miner fee.");
+Â Â Â Â Â Â Â  }
+Â Â Â Â Â  }
+Â Â Â  });
+Â  });
 }
 
 createTransaction(transaction).then(function(res){
@@ -108,13 +108,18 @@ console.log(res);
 
 */
 
+
+
+
+
+
 Point (A) code is var 
 ownerKey = new bitcore.PrivateKey(private key input which belongs to the owner of the property, which the seller use to sign as mentioned in A);
-console.log(ownerKey.toAddress());  // to get the property address.
+console.log(ownerKey.toAddress());Â  // to get the property address.
 
 
 // This code is used to generate the random key and its corresponding address at which the propoerty will be transfered to.
-var newOwnerKey = new bitcore.PrivateKey.fromRandom(bitcore.Networks.livenet)  // this key will be given to the owner
+var newOwnerKey = new bitcore.PrivateKey.fromRandom(bitcore.Networks.livenet)Â  // this key will be given to the owner
 console.log(newOwnerKey);
 console.log(newOwnerKey.toAddress());
 
@@ -165,3 +170,5 @@ Starts with the address.
 Make an API call to /api/addr to get the transactions and then use the TXid to make another API call to /api/tx to get the input and output address of transactions.
 Transactions in which outputaddr is same as address in which the transaction in present break the loop and consider that address as final address of the owner. 
 )
+
+Reference :: https://github.com/Kejixu/SmartProperty/blob/master/getUTXOs.js
