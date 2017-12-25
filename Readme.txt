@@ -113,6 +113,7 @@ console.log(res);
 
 
 
+
 Point (A) code is var 
 ownerKey = new bitcore.PrivateKey(private key input which belongs to the owner of the property, which the seller use to sign as mentioned in A);
 console.log(ownerKey.toAddress());  // to get the property address.
@@ -172,3 +173,4 @@ Transactions in which outputaddr is same as address in which the transaction in 
 )
 
 Reference :: https://github.com/Kejixu/SmartProperty/blob/master/getUTXOs.js
+https://samsclass.info/141/proj/pBitc1.htm
