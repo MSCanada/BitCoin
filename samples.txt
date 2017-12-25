@@ -1,0 +1,69 @@
+0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206
+
+
+BlockHash:
+	006c6bb6dc6da86df3bd5fa399cfcbeb32827cd1da6d825ad745866134f11ada
+TX: 17e7b6cdecf85e7d7b22fa02e3a92add81a5f6551e85c8762b732675c27eaceb
+Address:: Mined  mqkEkhXEKoGZGAfj25uZm2hnaGoeXu4Ehu  priv: cQsworyBtETXUwPCdHm9geWpy3WoADaE1ufd77YVZUQ4vnTQH9GD
+
+
+
+
+
+
+BlockHash:
+	683d114524603c04b791709efd30e19d1149f502b72a6d6fc61d38f9f770a21f
+TX: d67c16d0b2aed8e6050716b4bc15cc0856d6908744f68050340edd834cc1ca91
+Address:: Mined  mk6EsXRCLcj1BAjuhhd4hDdZTcMQzFLAkP
+
+
+
+
+
+bitcoin-cli createrawtransaction '''
+  [
+    {
+      "txid": "17e7b6cdecf85e7d7b22fa02e3a92add81a5f6551e85c8762b732675c27eaceb",
+      "vout" : 0
+    }
+  ]''' '{ "mk6EsXRCLcj1BAjuhhd4hDdZTcMQzFLAkP": 10 }'
+
+
+  0100000001ebac7ec27526732b76c8851e55f6a581dd2aa9e302fa227b7d5ef8eccdb6e7170000000000ffffffff0100ca9a3b000000001976a914322c1156e4ffb27f2d9f865c429ce29e582b2c8a88ac00000000
+
+
+
+  bitcoin-cli  listunspent 6 99999999 '''
+  [
+    "mqkEkhXEKoGZGAfj25uZm2hnaGoeXu4Ehu"
+  ]
+'''
+
+  bitcoin-cli  listunspent 6 99999999 '''
+  [
+    "mk6EsXRCLcj1BAjuhhd4hDdZTcMQzFLAkP"
+  ]
+'''
+
+
+bitcoin-cli createrawtransaction '''
+  [
+    {
+      "txid": "4088a87acf57ed5c92ca3725b06abb5acf420e75230f26c62e335bb7dd5018c5",
+      "vout" : 0
+    }
+  ]''' '{ "mk6EsXRCLcj1BAjuhhd4hDdZTcMQzFLAkP": 60.00 }'
+
+
+  0100000001c51850ddb75b332ec6260f23750e42cf5abb6ab02537ca925ced57cf7aa888400000000000ffffffff0100bca065010000001976a914322c1156e4ffb27f2d9f865c429ce29e582b2c8a88ac00000000
+
+
+
+bitcoin-cli signrawtransaction "0100000001c51850ddb75b332ec6260f23750e42cf5abb6ab02537ca925ced57cf7aa888400000000000ffffffff0100bca065010000001976a914322c1156e4ffb27f2d9f865c429ce29e582b2c8a88ac00000000"
+'[{"txid":"4088a87acf57ed5c92ca3725b06abb5acf420e75230f26c62e335bb7dd5018c5","vout":0,"scriptPubKey":"76a914322c1156e4ffb27f2d9f865c429ce29e582b2c8a88ac","redeemScript":""}]' '["cQsworyBtETXUwPCdHm9geWpy3WoADaE1ufd77YVZUQ4vnTQH9GD"]' "ALL"
+
+
+bitcoin-cli  importprivkey \
+              cQsworyBtETXUwPCdHm9geWpy3WoADaE1ufd77YVZUQ4vnTQH9GD \
+              "" \
+              true
